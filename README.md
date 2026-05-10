@@ -1,126 +1,78 @@
-# Diabetes-Prediction
-Diabetes-Risk-Prediction-
-Diabetes Risk Prediction Using Lifestyle and Genetic Data
+# Diabetes Risk Prediction Dashboard
 
-AI Diabetes Risk Predictor
+This project turns a standard diabetes classifier into a stronger portfolio and academic demo by combining:
 
-Project Overview
-An advanced machine learning application that predicts diabetes risk by analyzing clinical data, lifestyle factors, and genetic information. This project demonstrates how AI can be used for early health risk detection and personalized healthcare recommendations.
+- model benchmarking across multiple algorithms
+- explainable predictions with SHAP
+- intervention simulation for actionable risk reduction
+- a Flask API plus a polished React dashboard
 
-Key Achievement: 89%+ accuracy with ensemble machine learning models
+## Current Scope
 
-Problem Statement
-Traditional diabetes screening methods often miss early warning signs. This project integrates multiple health data sources using advanced ML algorithms to provide:
+The working prototype uses the public `diabetes_prediction_dataset.csv` file in `backend/data/` and focuses on lifestyle and clinical predictors:
 
-Early risk detection (2-3 years before clinical diagnosis)
+- gender
+- age
+- hypertension
+- heart disease
+- smoking history
+- BMI
+- HbA1c
+- blood glucose
 
-Personalized risk assessment
+Important note: this version does **not** include real genomic markers. The codebase is structured so a hereditary or genomic module can be added later without rebuilding the UI or API.
 
-Actionable lifestyle recommendations
+## Project Structure
 
-Real-time web-based predictions
+- `backend/train.py`: trains and saves the deployment bundle
+- `backend/app.py`: Flask API with prediction, metadata, and simulation endpoints
+- `backend/ml_pipeline.py`: shared preprocessing, model training, defaults, and scenario logic
+- `frontend/`: React dashboard built with Vite and Recharts
 
-Technical Features
-Data Integration Clinical Biomarkers: HbA1c, glucose levels, blood pressure, BMI
+## How To Run
 
-Lifestyle Factors: Exercise habits, diet quality, sleep patterns, stress levels
+### Backend
 
-Genetic Risk: Family history, ethnicity-based risk factors
+```powershell
+cd backend
+venv\Scripts\python.exe train.py
+venv\Scripts\python.exe app.py
+```
 
-Social Determinants: Education, income, employment status
+API endpoints:
 
-Advanced ML Architecture
-Multiple Algorithms: Random Forest, XGBoost, Neural Networks, SVM
+- `GET /health`
+- `GET /metadata`
+- `POST /predict`
+- `POST /simulate`
 
-Ensemble Learning: Combines best-performing models for optimal accuracy
+### Frontend
 
-Feature Engineering: 50+ derived features with interaction terms
+```powershell
+cd frontend
+npm run dev
+```
 
-Cross-Validation: Robust model validation with 10-fold testing
+The frontend expects the backend at `http://127.0.0.1:5000` by default.
 
-Performance Metrics
-Model Accuracy AUC Score Precision Recall Random Forest 87.4% 0.91 0.86 0.88 XGBoost 89.2% 0.93 0.87 0.91 Ensemble 89.6% 0.94 0.88 0.91
+## Standout Features You Can Talk About
 
-Launch web application
-streamlit run app_advanced.py Project Structure text diabetes_project/ ├── app_advanced.py # Main web application ├── create_advanced_data.py # Dataset generation ├── train_advanced_models.py # Model training ├── feature_engineering.py # Feature creation ├── assets/ # CSS styling ├── models/ # Trained ML models └── data/ # Generated datasets
+- Compared multiple models instead of shipping the first one that worked.
+- Added SHAP-based local explanations to improve trust and interpretability.
+- Built a "what-if" simulator so predictions become actionable.
+- Separated lifestyle, clinical, and personal background influence in the dashboard.
+- Designed the API for future hereditary or genomic data integration.
 
-Application Features
-Interactive Web Interface
-Multi-Tab Input System Clinical Data: Age, BMI, glucose, HbA1c, blood pressure, lipid profile
+## Suggested Research Framing
 
-Lifestyle: Exercise, diet quality, sleep, stress, smoking, alcohol
+Use this problem framing in your report:
 
-Genetic Risk: Family history, ethnicity, genetic risk simulation
+> Explainable machine learning can improve early diabetes risk screening by combining lifestyle and clinical data into a personalized risk assessment workflow, while remaining extensible to hereditary or genomic inputs.
 
-Real-time Prediction: Instant risk calculation with visual results
+## Strong Next Upgrade
 
-Advanced Visualizations
-Risk Gauge: Color-coded risk percentage with animated progress
+If you want to align even more closely with your original problem statement, the best next enhancement is:
 
-Feature Importance: Interactive charts showing key risk factors
-
-Personalized Recommendations: Tailored health advice based on individual profile
-
-Risk Stratification: Clear categorization (Low/Moderate/High/Very High)
-
-Key Innovations
-Multi-Omics Integration Combines clinical, lifestyle, and genetic data for comprehensive assessment
-
-Advanced feature engineering with metabolic syndrome scores
-
-Interaction modeling between different health domains
-
-Population-specific risk adjustments
-
-Ensemble Machine Learning Soft voting classifier combining multiple algorithms
-
-Hyperparameter optimization for each model
-
-Feature selection using statistical testing
-
-Cross-validation for robust performance estimation
-
-Personalized Healthcare Individual risk profiles with detailed factor analysis
-
-Evidence-based lifestyle recommendations
-
-Risk factor prioritization for targeted interventions
-
-Progress tracking capabilities for longitudinal monitoring
-
-Real-World Applications
-Healthcare Providers Clinical Decision Support: Assist physicians in patient risk assessment
-
-Population Screening: Large-scale diabetes prevention programs
-
-Resource Planning: Identify high-risk patients requiring intensive care
-
-Early Intervention: Detect pre-diabetes for timely treatment
-
-Individual Users Personal Health: Understand individual diabetes risk factors
-
-Prevention: Receive actionable lifestyle modification recommendations
-
-Monitoring: Track risk changes over time with different interventions
-
-Education: Learn about diabetes risk factors and prevention strategies
-
-Technical Skills Demonstrated
-Machine Learning: Ensemble methods, feature engineering, cross-validation
-
-Web Development: Streamlit, HTML/CSS, responsive design
-
-Data Science: Statistical analysis, visualization, model interpretation
-
-Healthcare AI: Medical domain knowledge, clinical relevance, ethical considerations
-
-Performance Highlights
-89.6% Accuracy: Best-in-class prediction performance
-
-0.94 AUC Score: Excellent discrimination between risk groups
-
-91% Recall: High sensitivity for identifying at-risk individuals
-
-Real-time Processing: Instant predictions with sub-second response time
-
-Scalable Architecture: Designed for production deployment
+1. add a real family-history or genomic-risk dataset
+2. retrain a multimodal fusion model
+3. compare `clinical only` vs `lifestyle + clinical + hereditary`

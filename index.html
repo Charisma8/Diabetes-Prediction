@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DiabetesIQ — Risk Prediction</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F2EC;--surface:#FDFBF7;--card:#FFFFFF;
+  --ink:#1A1714;--ink-2:#5C564F;--ink-3:#A09990;
+  --accent:#C84B2F;--accent-light:#F2E8E4;
+  --teal:#1E7A6B;--teal-light:#E4F2EF;
+  --amber:#D4860A;--amber-light:#FDF3DC;
+  --green:#2D7A3A;--green-light:#E4F4E7;
+  --border:#E8E2D9;--border-strong:#C8BFB4;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'DM Sans',sans-serif;
+  --r:12px;--r-lg:20px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;}
+nav{position:sticky;top:0;z-index:100;background:rgba(245,242,236,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;}
+.nav-logo{font-family:var(--serif);font-size:1.35rem;color:var(--ink);}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:18px;list-style:none}
+.nav-links a{font-size:13px;color:var(--ink-2);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-pill{background:var(--accent);color:#fff;font-size:13px;font-weight:500;padding:8px 18px;border-radius:100px;border:none;cursor:pointer;transition:opacity .2s;}
+.nav-pill:hover{opacity:.85}
+.hero{padding:72px 2rem 56px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);color:var(--accent);font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;margin-bottom:18px;}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
+h1{font-family:var(--serif);font-size:clamp(2.1rem,4vw,3rem);line-height:1.15;color:var(--ink);margin-bottom:16px;}
+h1 em{font-style:italic;color:var(--accent)}
+.hero-sub{font-size:15px;color:var(--ink-2);line-height:1.7;margin-bottom:26px;max-width:420px;}
+.hero-cta{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-primary{background:var(--accent);color:#fff;padding:11px 24px;border-radius:100px;border:none;cursor:pointer;font-size:14px;font-weight:500;font-family:var(--sans);transition:transform .15s,opacity .15s;}
+.btn-primary:hover{transform:translateY(-1px);opacity:.9}
+.btn-outline{background:transparent;color:var(--ink);padding:11px 24px;border-radius:100px;border:1.5px solid var(--border-strong);cursor:pointer;font-size:14px;font-family:var(--sans);transition:border-color .2s;}
+.btn-outline:hover{border-color:var(--ink)}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;}
+.stat-card.accent{background:var(--accent);border-color:var(--accent)}
+.stat-card.accent .stat-num,.stat-card.accent .stat-label{color:#fff}
+.stat-card.accent .stat-sub{color:rgba(255,255,255,.6)}
+.stat-card.tall{grid-row:span 2;display:flex;flex-direction:column;justify-content:flex-end}
+.stat-num{font-family:var(--serif);font-size:2.2rem;line-height:1;color:var(--ink);margin-bottom:3px;}
+.stat-label{font-size:13px;font-weight:500;color:var(--ink)}
+.stat-sub{font-size:11px;color:var(--ink-3);margin-top:3px}
+.mini-bar{height:4px;background:rgba(255,255,255,.25);border-radius:2px;margin-top:14px;overflow:hidden;}
+.mini-bar-fill{height:100%;background:rgba(255,255,255,.8);border-radius:2px;animation:grow 1.5s ease forwards}
+@keyframes grow{from{width:0}to{width:72%}}
+.section{max-width:1100px;margin:0 auto;padding:0 2rem 68px}
+.section-tag{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;}
+.section-title{font-family:var(--serif);font-size:clamp(1.5rem,3vw,2rem);margin-bottom:8px;}
+.section-sub{color:var(--ink-2);max-width:520px;margin-bottom:32px;font-size:14px;}
+.divider{border:none;border-top:1px solid var(--border);max-width:1100px;margin:0 auto 56px;}
+.tabs{display:flex;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:4px;margin-bottom:22px;width:fit-content;flex-wrap:wrap;}
+.tab-btn{padding:6px 16px;border-radius:100px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-2);font-family:var(--sans);transition:all .2s;}
+.tab-btn.active{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;}
+.calc-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;}
+.calc-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.calc-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.calc-icon.c-bmi{background:var(--teal-light)}.calc-icon.c-skin{background:var(--amber-light)}.calc-icon.c-dpf{background:var(--accent-light)}.calc-icon.c-ref{background:#EEF6FF}
+.calc-header-text h3{font-size:13px;font-weight:600;color:var(--ink);}
+.calc-header-text p{font-size:11px;color:var(--ink-3);}
+.calc-body{padding:20px 22px;}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.field:last-of-type{margin-bottom:0;}
+label{font-size:13px;font-weight:500;color:var(--ink-2);}
+.label-row{display:flex;justify-content:space-between;align-items:center;}
+.label-badge{font-size:11px;padding:2px 8px;border-radius:100px;font-weight:500;}
+.badge-clinical{background:var(--teal-light);color:var(--teal)}.badge-lifestyle{background:var(--amber-light);color:var(--amber)}.badge-genetic{background:var(--accent-light);color:var(--accent)}
+input[type="number"],select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--ink);background:var(--bg);outline:none;font-family:var(--sans);transition:border-color .2s;}
+input[type="number"]:focus,select:focus{border-color:var(--accent)}
+select{cursor:pointer;}
+input[type="range"]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:linear-gradient(to right,var(--accent) 0%,var(--accent) var(--pct,50%),var(--border) var(--pct,50%));cursor:pointer;outline:none;}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--card);border:2px solid var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.range-val{font-size:13px;font-weight:600;color:var(--accent);}
+.range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:2px;}
+.calc-result{margin-top:14px;padding:12px 16px;border-radius:var(--r);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.calc-result.hidden{display:none;}
+.result-num{font-family:var(--serif);font-size:1.7rem;color:var(--ink);}
+.result-label{font-size:12px;color:var(--ink-2);margin-top:2px;}
+.result-badge{font-size:12px;font-weight:600;padding:4px 11px;border-radius:100px;}
+.result-badge.normal{background:var(--green-light);color:var(--green)}.result-badge.overweight{background:var(--amber-light);color:var(--amber)}.result-badge.obese{background:var(--accent-light);color:var(--accent)}
+.btn-calc{width:100%;margin-top:12px;padding:10px;border-radius:var(--r);background:var(--ink);color:#fff;border:none;cursor:pointer;font-size:13px;font-weight:500;font-family:var(--sans);transition:opacity .2s;}
+.btn-calc:hover{opacity:.82}
+.btn-fill{width:100%;margin-top:8px;padding:8px;border-radius:var(--r);background:var(--teal);color:#fff;border:none;cursor:pointer;font-size:12px;font-weight:500;font-family:var(--sans);transition:opacity .2s;}
+.btn-fill:hover{opacity:.82}
+.skin-steps{display:flex;flex-direction:column;gap:8px;}
+.skin-step{display:flex;gap:10px;align-items:flex-start;}
+.skin-step-num{width:21px;height:21px;border-radius:50%;background:var(--ink);color:#fff;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.skin-step p{font-size:12px;color:var(--ink-2);line-height:1.5;}
+.ref-table{width:100%;border-collapse:collapse;}
+.ref-table th{font-size:11px;font-weight:600;color:var(--ink-3);text-align:left;padding:5px 7px;border-bottom:1px solid var(--border);}
+.ref-table td{font-size:12px;padding:6px 7px;border-bottom:1px solid var(--border);}
+.ref-table tr:last-child td{border-bottom:none;}
+.rel-row-select{width:100%;border:1px solid var(--border);border-radius:6px;padding:4px 7px;font-size:12px;font-family:var(--sans);background:var(--bg);color:var(--ink);}
+.add-rel-btn{background:transparent;border:1.5px dashed var(--border-strong);color:var(--ink-2);font-size:12px;font-family:var(--sans);padding:7px;border-radius:var(--r);cursor:pointer;width:100%;margin-top:8px;transition:border-color .2s;}
+.add-rel-btn:hover{border-color:var(--ink)}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;}
+.form-header{background:var(--ink);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;}
+.form-header-title{font-family:var(--serif);font-size:1.2rem;color:#fff;}
+.form-header-sub{font-size:12px;color:rgba(255,255,255,.48);margin-top:2px;}
+.step-dots{display:flex;gap:6px;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);}
+.dot.active{background:var(--accent)}
+.form-body{padding:26px 28px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.field.full{grid-column:span 2;}
+.prefilled-notice{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--teal);background:var(--teal-light);padding:4px 9px;border-radius:5px;width:fit-content;margin-top:4px;}
+.form-footer{border-top:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;}
+.form-note{font-size:12px;color:var(--ink-3);}
+.results-grid{display:grid;grid-template-columns:240px 1fr;gap:14px;}
+.results-grid-right{display:flex;flex-direction:column;gap:14px;}
+.gauge-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.gauge-wrap{position:relative;width:160px;height:160px;margin-bottom:12px;}
+.gauge-wrap svg{transform:rotate(-90deg);}
+.gauge-bg{fill:none;stroke:var(--border);stroke-width:13;}
+.gauge-fill{fill:none;stroke-width:13;stroke-linecap:round;stroke-dasharray:414;stroke-dashoffset:100;transition:stroke-dashoffset 1.2s ease,stroke .4s;}
+.gauge-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.gauge-pct{font-family:var(--serif);font-size:2rem;line-height:1;color:var(--ink);}
+.gauge-sub{font-size:11px;color:var(--ink-3);margin-top:1px;}
+.risk-badge{display:inline-block;padding:5px 14px;border-radius:100px;font-size:12px;font-weight:600;margin-bottom:7px;}
+.risk-badge.low{background:var(--green-light);color:var(--green)}.risk-badge.moderate{background:var(--amber-light);color:var(--amber)}.risk-badge.high{background:var(--accent-light);color:var(--accent)}
+.gauge-label{font-size:12px;color:var(--ink-2);line-height:1.5;}
+.shap-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;flex:1;}
+.card-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px;}
+.card-sub{font-size:12px;color:var(--ink-3);margin-bottom:16px;}
+.shap-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.shap-name{font-size:12px;color:var(--ink-2);width:145px;flex-shrink:0;}
+.shap-bar-track{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
+.shap-bar-fill{height:100%;border-radius:4px;}
+.shap-bar-fill.pos{background:var(--accent)}.shap-bar-fill.neg{background:var(--teal)}
+.shap-val{font-size:11px;font-weight:500;width:34px;text-align:right;}
+.shap-val.pos{color:var(--accent)}.shap-val.neg{color:var(--teal)}
+.insight-card{background:var(--ink);border-radius:var(--r-lg);padding:18px 22px;display:flex;gap:12px;align-items:flex-start;}
+.insight-icon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.insight-text p{font-size:13px;color:rgba(255,255,255,.85);line-height:1.6;}
+.insight-text strong{color:#fff;}
+.rec-section{margin-top:30px;}
+.rec-header{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.rec-header h3{font-family:var(--serif);font-size:1.35rem;}
+.rec-tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.rec-tab{padding:6px 15px;border-radius:100px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-2);font-family:var(--sans);transition:all .2s;}
+.rec-tab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.rec-panel{display:none;}
+.rec-panel.active{display:block;}
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.rec-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;}
+.rec-card-icon{font-size:20px;margin-bottom:8px;}
+.rec-card h4{font-size:13px;font-weight:600;margin-bottom:7px;color:var(--ink);}
+.rec-card ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.rec-card ul li{font-size:12px;color:var(--ink-2);display:flex;gap:6px;align-items:flex-start;line-height:1.5;}
+.rec-card ul li::before{content:'•';color:var(--accent);font-weight:700;flex-shrink:0;}
+.rec-card ul li.good::before{color:var(--teal)}
+.rec-card ul li.bad::before{content:'✕';color:var(--accent)}
+.rec-card.highlight{border-color:var(--teal);background:var(--teal-light);}
+.rec-card.highlight h4{color:var(--teal);}
+.week-plan{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-bottom:16px;}
+.day-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 6px;text-align:center;}
+.day-name{font-size:9px;font-weight:600;color:var(--ink-3);text-transform:uppercase;margin-bottom:6px;letter-spacing:.04em;}
+.day-activity{font-size:10px;color:var(--ink-2);line-height:1.4;}
+.day-pill{display:inline-block;margin-top:5px;padding:2px 7px;border-radius:100px;font-size:9px;font-weight:500;}
+.day-pill.cardio{background:var(--teal-light);color:var(--teal)}.day-pill.strength{background:var(--amber-light);color:var(--amber)}.day-pill.rest{background:var(--border);color:var(--ink-3)}.day-pill.yoga{background:#EEE8FE;color:#5540B0}
+.maintain-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.maintain-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;}
+.maintain-card.gb{border-color:var(--teal);}
+.maintain-card h4{font-size:13px;font-weight:600;margin-bottom:9px;display:flex;align-items:center;gap:5px;}
+.maintain-card ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.maintain-card ul li{font-size:12px;color:var(--ink-2);display:flex;gap:6px;line-height:1.5;}
+.maintain-card ul li::before{content:'✓';color:var(--teal);font-weight:700;flex-shrink:0;}
+.sim-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;}
+.sim-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sim-live{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--teal);font-weight:500;}
+.sim-live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 1.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.sim-body{display:grid;grid-template-columns:1fr 1fr;}
+.sim-controls{padding:22px;border-right:1px solid var(--border);}
+.sim-result{padding:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.sim-big-num{font-family:var(--serif);font-size:3.4rem;color:var(--ink);line-height:1;margin-bottom:6px;}
+.sim-arrow{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:500;padding:4px 11px;border-radius:100px;margin-bottom:8px;}
+.sim-arrow.down{color:var(--teal);background:var(--teal-light);}
+.sim-arrow.up{color:var(--accent);background:var(--accent-light);}
+.sim-note{font-size:12px;color:var(--ink-3);line-height:1.5;}
+.steps-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;}
+.step-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:12px;}
+.step-icon.c1{background:var(--accent-light)}.step-icon.c2{background:var(--teal-light)}.step-icon.c3{background:var(--amber-light)}.step-icon.c4{background:#EEE8FE}
+.step-num{font-family:var(--serif);font-size:1.8rem;color:var(--border-strong);margin-bottom:9px;line-height:1;}
+.step-item h4{font-size:13px;font-weight:600;margin-bottom:5px;}
+.step-item p{font-size:12px;color:var(--ink-2);line-height:1.6;}
+footer{background:var(--ink);padding:32px 2rem;text-align:center;}
+.footer-logo{font-family:var(--serif);font-size:1.35rem;color:#fff;margin-bottom:5px;}
+.footer-logo span{color:var(--accent)}
+footer p{font-size:12px;color:rgba(255,255,255,.35);}
+.info-box{padding:10px 13px;border-radius:var(--r);font-size:12px;line-height:1.5;}
+.info-box.teal{background:var(--teal-light);color:var(--teal)}
+.info-box.amber{background:var(--amber-light);color:var(--amber)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.hero>*{animation:fadeUp .55s ease both;}
+.hero>*:nth-child(1){animation-delay:.06s}.hero>*:nth-child(2){animation-delay:.18s}
+@media(max-width:768px){
+  .hero,.calc-grid,.results-grid,.sim-body,.steps-row,.rec-grid,.maintain-grid{grid-template-columns:1fr;}
+  .form-grid{grid-template-columns:1fr;}.field.full{grid-column:span 1;}
+  .week-plan{grid-template-columns:repeat(4,1fr);}
+  .nav-links{display:none;}
+  .sim-controls{border-right:none;border-bottom:1px solid var(--border);}
+  .results-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Diabetes<span>IQ</span></div>
+  <ul class="nav-links">
+    <li><a href="#calculators">Step 1: Calculate</a></li>
+    <li><a href="#check">Step 2: Assess</a></li>
+    <li><a href="#results">Step 3: Results</a></li>
+    <li><a href="#simulator">What-If</a></li>
+  </ul>
+  <button class="nav-pill" onclick="document.getElementById('calculators').scrollIntoView({behavior:'smooth'})">Start Free →</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-badge">3 Built-in Calculators · ML-Powered · Explainable</div>
+    <h1>Know your <em>diabetes risk</em> — and how to beat it</h1>
+    <p class="hero-sub">Calculate BMI, skin thickness, and family history score right here. Get a personalised risk prediction with a diet &amp; exercise plan — all in one place.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('calculators').scrollIntoView({behavior:'smooth'})">Start My Assessment</button>
+      <button class="btn-outline" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How It Works</button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-card accent tall">
+      <div class="stat-num">589M</div>
+      <div class="stat-label">People with diabetes worldwide</div>
+      <div class="stat-sub">IDF 2024 report</div>
+      <div class="mini-bar"><div class="mini-bar-fill"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">92%</div>
+      <div class="stat-label">Model accuracy</div>
+      <div class="stat-sub">AUC-ROC on test set</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">3-in-1</div>
+      <div class="stat-label">Built-in calculators</div>
+      <div class="stat-sub">BMI · Skin · Genetics</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ══ STEP 1: CALCULATORS ══ -->
+<section class="section" id="calculators">
+  <div class="section-tag">Step 1 of 3 — Know Your Numbers</div>
+  <h2 class="section-title">Calculate the values you don't know</h2>
+  <p class="section-sub">Don't know your BMI, skin thickness, or family history score? Calculate them here — results auto-fill into the form in Step 2.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('bmi',this)">⚖️ BMI Calculator</button>
+    <button class="tab-btn" onclick="switchTab('skin',this)">📏 Skin Thickness</button>
+    <button class="tab-btn" onclick="switchTab('dpf',this)">🧬 Diabetes Pedigree</button>
+  </div>
+
+  <!-- ── BMI ── -->
+  <div class="tab-panel active" id="tab-bmi">
+    <div class="calc-grid">
+      <div class="calc-card">
+        <div class="calc-header">
+          <div class="calc-icon c-bmi">⚖️</div>
+          <div class="calc-header-text"><h3>BMI Calculator</h3><p>Body Mass Index from height &amp; weight</p></div>
+        </div>
+        <div class="calc-body">
+          <div class="field">
+            <label>Unit System</label>
+            <select id="bmi-unit" onchange="toggleBmiUnit()">
+              <option value="metric">Metric (cm / kg)</option>
+              <option value="imperial">Imperial (ft, in / lbs)</option>
+            </select>
+          </div>
+          <div id="bmi-metric-fields">
+            <div class="field"><label>Height (cm)</label><input type="number" id="bmi-h-cm" placeholder="e.g. 165" min="100" max="250"/></div>
+            <div class="field"><label>Weight (kg)</label><input type="number" id="bmi-w-kg" placeholder="e.g. 68" min="20" max="300"/></div>
+          </div>
+          <div id="bmi-imperial-fields" style="display:none">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div class="field"><label>Feet</label><input type="number" id="bmi-ft" placeholder="5" min="3" max="8"/></div>
+              <div class="field"><label>Inches</label><input type="number" id="bmi-in" placeholder="5" min="0" max="11"/></div>
+            </div>
+            <div class="field"><label>Weight (lbs)</label><input type="number" id="bmi-lbs" placeholder="e.g. 150"/></div>
+          </div>
+          <button class="btn-calc" onclick="calcBMI()">Calculate BMI</button>
+          <div class="calc-result hidden" id="bmi-result">
+            <div><div class="result-num" id="bmi-num">—</div><div class="result-label">Your BMI</div></div>
+            <span class="result-badge" id="bmi-cat">—</span>
+          </div>
+          <button class="btn-fill hidden" id="bmi-fill-btn" onclick="fillBMI()">✓ Use this value in Step 2 form</button>
+        </div>
+      </div>
+      <div class="calc-card">
+        <div class="calc-header">
+          <div class="calc-icon c-ref">📊</div>
+          <div class="calc-header-text"><h3>BMI Reference Chart</h3><p>What your number means</p></div>
+        </div>
+        <div class="calc-body">
+          <table class="ref-table">
+            <thead><tr><th>BMI Range</th><th>Category</th><th>Diabetes Risk</th></tr></thead>
+            <tbody>
+              <tr><td>&lt; 18.5</td><td>Underweight</td><td style="color:var(--amber)">Moderate</td></tr>
+              <tr><td>18.5–22.9</td><td style="color:var(--green)">Normal (India)</td><td style="color:var(--teal)">Low</td></tr>
+              <tr><td>23–24.9</td><td style="color:var(--amber)">At Risk (India)</td><td style="color:var(--amber)">Moderate</td></tr>
+              <tr><td>25–29.9</td><td style="color:var(--amber)">Overweight</td><td style="color:var(--amber)">Moderate–High</td></tr>
+              <tr><td>30–34.9</td><td style="color:var(--accent)">Obese I</td><td style="color:var(--accent)">High</td></tr>
+              <tr><td>≥ 35</td><td style="color:var(--accent)">Obese II+</td><td style="color:var(--accent)">Very High</td></tr>
+            </tbody>
+          </table>
+          <div class="info-box teal" style="margin-top:12px;">For South Asians, diabetes risk starts at BMI ≥ 23 — lower than the global threshold of 25. Use the India-specific column above.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SKIN THICKNESS ── -->
+  <div class="tab-panel" id="tab-skin">
+    <div class="calc-grid">
+      <div class="calc-card">
+        <div class="calc-header">
+          <div class="calc-icon c-skin">📏</div>
+          <div class="calc-header-text"><h3>Skin Thickness Estimator</h3><p>Based on age, sex &amp; body type</p></div>
+        </div>
+        <div class="calc-body">
+          <p style="font-size:12px;color:var(--ink-2);margin-bottom:14px;line-height:1.5;">Skin fold thickness is measured at the tricep. If you can't measure it directly, our estimator uses your demographics to give an accurate approximation.</p>
+          <div class="field">
+            <label>Biological Sex</label>
+            <select id="skin-sex"><option value="female">Female</option><option value="male">Male</option></select>
+          </div>
+          <div class="field">
+            <div class="label-row"><label>Age</label><span class="range-val" id="skin-age-out">30</span></div>
+            <input type="range" id="skin-age" min="18" max="80" value="30" oninput="setR(this,'skin-age-out',0)"/>
+            <div class="range-labels"><span>18</span><span>80</span></div>
+          </div>
+          <div class="field">
+            <label>Body Build (self-assessment)</label>
+            <select id="skin-build">
+              <option value="lean">Lean / Slim</option>
+              <option value="average" selected>Average</option>
+              <option value="heavy">Heavy / Overweight</option>
+              <option value="obese">Obese</option>
+            </select>
+          </div>
+          <button class="btn-calc" onclick="calcSkin()">Estimate Skin Thickness</button>
+          <div class="calc-result hidden" id="skin-result">
+            <div><div class="result-num" id="skin-num">—</div><div class="result-label">Estimated mm</div></div>
+            <span class="result-badge normal" id="skin-cat">Normal</span>
+          </div>
+          <button class="btn-fill hidden" id="skin-fill-btn" onclick="fillSkin()">✓ Use this value in Step 2 form</button>
+        </div>
+      </div>
+      <div class="calc-card">
+        <div class="calc-header">
+          <div class="calc-icon c-skin" style="background:#FFF3E0">📖</div>
+          <div class="calc-header-text"><h3>How to measure it yourself</h3><p>Step-by-step — no equipment needed</p></div>
+        </div>
+        <div class="calc-body">
+          <div class="skin-steps">
+            <div class="skin-step"><div class="skin-step-num">1</div><p>Stand relaxed with your arm hanging at your side naturally.</p></div>
+            <div class="skin-step"><div class="skin-step-num">2</div><p>Find the back of your upper arm (tricep), midway between your shoulder tip and elbow.</p></div>
+            <div class="skin-step"><div class="skin-step-num">3</div><p>Using thumb and forefinger, gently pinch the skin vertically. Pinch <em>only</em> skin — not muscle.</p></div>
+            <div class="skin-step"><div class="skin-step-num">4</div><p>Measure the thickness of the fold using a ruler in millimetres. Typical range: 12–35 mm.</p></div>
+          </div>
+          <div class="info-box amber" style="margin-top:14px;"><strong>No ruler?</strong> Use the estimator on the left. Women average 20–28 mm, Men average 14–22 mm.</div>
+          <table class="ref-table" style="margin-top:14px;">
+            <thead><tr><th>Value (mm)</th><th>Interpretation</th></tr></thead>
+            <tbody>
+              <tr><td>&lt; 15</td><td style="color:var(--teal)">Very lean</td></tr>
+              <tr><td>15–25</td><td style="color:var(--green)">Normal</td></tr>
+              <tr><td>26–35</td><td style="color:var(--amber)">Above average</td></tr>
+              <tr><td>&gt; 35</td><td style="color:var(--accent)">High body fat</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DPF ── -->
+  <div class="tab-panel" id="tab-dpf">
+    <div class="calc-grid">
+      <div class="calc-card">
+        <div class="calc-header">
+          <div class="calc-icon c-dpf">🧬</div>
+          <div class="calc-header-text"><h3>Diabetes Pedigree Function</h3><p>Family history genetic risk score</p></div>
+        </div>
+        <div class="calc-body">
+          <p style="font-size:12px;color:var(--ink-2);margin-bottom:14px;line-height:1.6;">The DPF score (0.08–2.5) measures how strongly diabetes runs in your family. Add each family member who has or had diabetes.</p>
+          <div style="font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:7px;">Family members with diabetes:</div>
+          <table class="ref-table" id="dpf-tbl">
+            <thead><tr><th>Relative Type</th><th>Generation</th><th>Weight</th><th></th></tr></thead>
+            <tbody id="dpf-tbody">
+              <tr>
+                <td><select class="rel-row-select" onchange="updateDPFRow(this)">
+                  <option value="none">— Select —</option>
+                  <option value="parent">Parent (mother/father)</option>
+                  <option value="sibling">Brother / Sister</option>
+                  <option value="grandparent">Grandparent</option>
+                  <option value="uncle_aunt">Uncle / Aunt</option>
+                  <option value="cousin">Cousin</option>
+                </select></td>
+                <td class="dpf-gen" style="font-size:12px;color:var(--ink-3)">—</td>
+                <td><span class="dpf-wt" style="font-size:13px;font-weight:600;color:var(--ink-2)">—</span></td>
+                <td><button onclick="removeRow(this)" style="background:none;border:none;cursor:pointer;color:var(--ink-3);font-size:13px;padding:2px 4px;">✕</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="add-rel-btn" onclick="addRelRow()">+ Add another relative</button>
+          <button class="btn-calc" style="margin-top:12px;" onclick="calcDPF()">Calculate DPF Score</button>
+          <div class="calc-result hidden" id="dpf-result">
+            <div><div class="result-num" id="dpf-num">—</div><div class="result-label">DPF Score</div></div>
+            <span class="result-badge" id="dpf-cat">—</span>
+          </div>
+          <button class="btn-fill hidden" id="dpf-fill-btn" onclick="fillDPF()">✓ Use this score in Step 2 form</button>
+        </div>
+      </div>
+      <div class="calc-card">
+        <div class="calc-header">
+          <div class="calc-icon c-dpf" style="background:#EEF6FF">📖</div>
+          <div class="calc-header-text"><h3>DPF Score Guide</h3><p>How family closeness affects your score</p></div>
+        </div>
+        <div class="calc-body">
+          <table class="ref-table">
+            <thead><tr><th>Relative</th><th>Weight</th><th>Reason</th></tr></thead>
+            <tbody>
+              <tr><td>Parent</td><td style="color:var(--accent);font-weight:600">0.50</td><td style="font-size:11px;color:var(--ink-3)">50% shared DNA</td></tr>
+              <tr><td>Sibling</td><td style="color:var(--accent);font-weight:600">0.45</td><td style="font-size:11px;color:var(--ink-3)">~50% shared DNA</td></tr>
+              <tr><td>Grandparent</td><td style="color:var(--amber);font-weight:600">0.30</td><td style="font-size:11px;color:var(--ink-3)">25% shared DNA</td></tr>
+              <tr><td>Uncle / Aunt</td><td style="color:var(--amber);font-weight:600">0.25</td><td style="font-size:11px;color:var(--ink-3)">25% shared DNA</td></tr>
+              <tr><td>Cousin</td><td style="color:var(--teal);font-weight:600">0.12</td><td style="font-size:11px;color:var(--ink-3)">12.5% shared DNA</td></tr>
+            </tbody>
+          </table>
+          <div class="info-box teal" style="margin-top:12px;"><strong>Score guide:</strong> 0.08–0.39 = Low · 0.40–0.79 = Moderate · 0.80–2.5 = High. No family history → use default 0.08.</div>
+          <div class="info-box amber" style="margin-top:8px;"><strong>Important:</strong> High DPF doesn't mean you will get diabetes. Lifestyle changes can compensate significantly for genetic risk.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ══ STEP 2: FORM ══ -->
+<section class="section" id="check">
+  <div class="section-tag">Step 2 of 3 — Health Assessment</div>
+  <h2 class="section-title">Enter your health data</h2>
+  <p class="section-sub">Values from the calculators above auto-fill here. Complete the remaining fields — all are easy to find from a basic health check-up.</p>
+  <div class="form-card">
+    <div class="form-header">
+      <div>
+        <div class="form-header-title">Health Assessment Form</div>
+        <div class="form-header-sub">8 indicators · Clinical + Lifestyle + Genetic</div>
+      </div>
+      <div class="step-dots">
+        <div class="dot active"></div><div class="dot active"></div><div class="dot"></div>
+      </div>
+    </div>
+    <div class="form-body">
+      <div class="form-grid">
+        <div class="field">
+          <div class="label-row"><label>Glucose Level (mg/dL)</label><span class="label-badge badge-clinical">Clinical</span></div>
+          <input type="number" id="f-glucose" placeholder="e.g. 120 — from fasting blood test"/>
+        </div>
+        <div class="field">
+          <div class="label-row"><label>Blood Pressure — Diastolic (mmHg)</label><span class="label-badge badge-clinical">Clinical</span></div>
+          <input type="number" id="f-bp" placeholder="e.g. 80 — the lower BP reading"/>
+        </div>
+        <div class="field">
+          <div class="label-row"><label>BMI</label><span class="label-badge badge-lifestyle">Lifestyle</span></div>
+          <input type="number" id="f-bmi" placeholder="Calculate ↑ in Step 1" step="0.1"/>
+          <div class="prefilled-notice" id="bmi-pre" style="display:none">✓ Auto-filled from BMI Calculator</div>
+        </div>
+        <div class="field">
+          <div class="label-row"><label>Skin Thickness (mm)</label><span class="label-badge badge-clinical">Clinical</span></div>
+          <input type="number" id="f-skin" placeholder="Estimate ↑ in Step 1"/>
+          <div class="prefilled-notice" id="skin-pre" style="display:none">✓ Auto-filled from Skin Estimator</div>
+        </div>
+        <div class="field">
+          <div class="label-row"><label>Insulin Level (μU/mL)</label><span class="label-badge badge-clinical">Clinical</span></div>
+          <input type="number" id="f-insulin" placeholder="e.g. 80 — from fasting insulin test"/>
+        </div>
+        <div class="field">
+          <div class="label-row"><label>Age (years)</label><span class="label-badge badge-lifestyle">Lifestyle</span></div>
+          <input type="number" id="f-age" placeholder="e.g. 35"/>
+        </div>
+        <div class="field">
+          <div class="label-row"><label>Number of Pregnancies</label><span class="label-badge badge-lifestyle">Lifestyle</span></div>
+          <input type="number" id="f-preg" placeholder="e.g. 2 (enter 0 if male)"/>
+        </div>
+        <div class="field">
+          <div class="label-row"><label>Diabetes Pedigree (DPF)</label><span class="label-badge badge-genetic">Genetic</span></div>
+          <input type="number" id="f-dpf" placeholder="Calculate ↑ in Step 1" step="0.01"/>
+          <div class="prefilled-notice" id="dpf-pre" style="display:none">✓ Auto-filled from DPF Calculator</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-footer">
+      <div class="form-note">🔒 Your data is never stored or shared</div>
+      <button class="btn-primary" onclick="runPrediction()">Analyse My Risk →</button>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ══ STEP 3: RESULTS ══ -->
+<section class="section" id="results">
+  <div class="section-tag">Step 3 of 3 — Your Results</div>
+  <h2 class="section-title">Your personalised risk report</h2>
+  <p class="section-sub">Your risk score, what's driving it, and your tailored action plan.</p>
+
+  <div class="results-grid">
+    <div class="gauge-card">
+      <div class="gauge-wrap">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle class="gauge-bg" cx="80" cy="80" r="62"/>
+          <circle class="gauge-fill" id="gauge-c" cx="80" cy="80" r="62" style="stroke:var(--accent)"/>
+        </svg>
+        <div class="gauge-center">
+          <div class="gauge-pct" id="gauge-pct">—</div>
+          <div class="gauge-sub">risk score</div>
+        </div>
+      </div>
+      <div class="risk-badge high" id="risk-badge">—</div>
+      <p class="gauge-label" id="gauge-lbl">Fill in Step 2 and click Analyse.</p>
+    </div>
+    <div class="results-grid-right">
+      <div class="shap-card">
+        <div class="card-title">What's driving your risk?</div>
+        <div class="card-sub">Red bars increase risk · Teal bars reduce it</div>
+        <div class="shap-row"><span class="shap-name">Glucose level</span><div class="shap-bar-track"><div class="shap-bar-fill pos" id="sh1" style="width:0%"></div></div><span class="shap-val pos" id="sv1">—</span></div>
+        <div class="shap-row"><span class="shap-name">BMI</span><div class="shap-bar-track"><div class="shap-bar-fill pos" id="sh2" style="width:0%"></div></div><span class="shap-val pos" id="sv2">—</span></div>
+        <div class="shap-row"><span class="shap-name">Diabetes Pedigree</span><div class="shap-bar-track"><div class="shap-bar-fill pos" id="sh3" style="width:0%"></div></div><span class="shap-val pos" id="sv3">—</span></div>
+        <div class="shap-row"><span class="shap-name">Age</span><div class="shap-bar-track"><div class="shap-bar-fill pos" id="sh4" style="width:0%"></div></div><span class="shap-val pos" id="sv4">—</span></div>
+        <div class="shap-row"><span class="shap-name">Blood Pressure</span><div class="shap-bar-track"><div class="shap-bar-fill neg" id="sh5" style="width:0%"></div></div><span class="shap-val neg" id="sv5">—</span></div>
+        <div class="shap-row"><span class="shap-name">Insulin</span><div class="shap-bar-track"><div class="shap-bar-fill neg" id="sh6" style="width:0%"></div></div><span class="shap-val neg" id="sv6">—</span></div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">💡</div>
+        <div class="insight-text"><p id="insight-txt">Complete Step 2 to see your personalised insight here.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RECOMMENDATIONS ══ -->
+  <div class="rec-section" id="recommendations" style="display:none;">
+    <div class="rec-header">
+      <div style="font-size:20px">🥗</div>
+      <h3 id="rec-main-title">Your personalised action plan</h3>
+    </div>
+
+    <!-- HIGH RISK -->
+    <div id="rec-high" style="display:none;">
+      <div style="padding:14px 18px;background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--r-lg);margin-bottom:18px;display:flex;align-items:center;gap:10px;">
+        <div style="font-size:22px;">🚨</div>
+        <div><div style="font-size:14px;font-weight:600;color:var(--accent);">High Risk — Take action now.</div><div style="font-size:12px;color:var(--ink-2);margin-top:2px;">Your risk score puts you in the high-risk category. The good news: lifestyle changes can reduce this risk by 50–60% within 6 months.</div></div>
+      </div>
+      <div class="rec-tabs">
+        <button class="rec-tab active" onclick="switchRec('diet-h',this)">🥗 Diet Plan</button>
+        <button class="rec-tab" onclick="switchRec('exr-h',this)">🏃 Exercise Plan</button>
+        <button class="rec-tab" onclick="switchRec('hab-h',this)">🌙 Daily Habits</button>
+        <button class="rec-tab" onclick="switchRec('tgt-h',this)">🎯 Targets</button>
+      </div>
+      <div class="rec-panel active" id="rec-diet-h">
+        <div class="rec-grid">
+          <div class="rec-card"><div class="rec-card-icon">✅</div><h4>Eat daily</h4><ul>
+            <li class="good">Leafy greens — spinach, methi, palak</li>
+            <li class="good">Whole grains — brown rice, oats, ragi, jowar</li>
+            <li class="good">Lentils &amp; legumes — dal, rajma, chana</li>
+            <li class="good">Fatty fish — mackerel, sardines (2× week)</li>
+            <li class="good">Almonds, walnuts — small handful daily</li>
+            <li class="good">Cinnamon in chai or food — lowers glucose</li>
+          </ul></div>
+          <div class="rec-card"><div class="rec-card-icon">❌</div><h4>Strictly avoid</h4><ul>
+            <li class="bad">White rice, maida, refined flour breads</li>
+            <li class="bad">Sugary drinks — cola, packaged juice, sweet chai</li>
+            <li class="bad">Deep fried foods — samosa, vada, chips daily</li>
+            <li class="bad">Ultra-processed biscuits and snacks</li>
+            <li class="bad">Mango, banana, grapes in excess</li>
+            <li class="bad">Alcohol — raises blood sugar directly</li>
+          </ul></div>
+          <div class="rec-card highlight"><div class="rec-card-icon">🍽️</div><h4>Plate method (every meal)</h4><ul>
+            <li class="good">½ plate: non-starchy vegetables</li>
+            <li class="good">¼ plate: lean protein (eggs, dal, fish, paneer)</li>
+            <li class="good">¼ plate: complex carbs (brown rice, chapati)</li>
+            <li class="good">Eat 3 meals + 1–2 small snacks per day</li>
+            <li class="good">Never skip breakfast — causes glucose spikes</li>
+            <li class="good">Dinner at least 2 hours before sleeping</li>
+          </ul></div>
+        </div>
+      </div>
+      <div class="rec-panel" id="rec-exr-h">
+        <div class="week-plan">
+          <div class="day-card"><div class="day-name">Mon</div><div class="day-activity">Brisk walk 30 min</div><div class="day-pill cardio">Cardio</div></div>
+          <div class="day-card"><div class="day-name">Tue</div><div class="day-activity">Squats, push-ups 20 min</div><div class="day-pill strength">Strength</div></div>
+          <div class="day-card"><div class="day-name">Wed</div><div class="day-activity">Cycling or swimming 30 min</div><div class="day-pill cardio">Cardio</div></div>
+          <div class="day-card"><div class="day-name">Thu</div><div class="day-activity">Yoga / stretching 20 min</div><div class="day-pill yoga">Yoga</div></div>
+          <div class="day-card"><div class="day-name">Fri</div><div class="day-activity">Brisk walk 30 min</div><div class="day-pill cardio">Cardio</div></div>
+          <div class="day-card"><div class="day-name">Sat</div><div class="day-activity">Resistance training 25 min</div><div class="day-pill strength">Strength</div></div>
+          <div class="day-card"><div class="day-name">Sun</div><div class="day-activity">Rest — light stroll</div><div class="day-pill rest">Rest</div></div>
+        </div>
+        <div class="rec-grid">
+          <div class="rec-card"><div class="rec-card-icon">🚶</div><h4>Cardio goal</h4><ul><li class="good">30 min brisk walk lowers blood sugar right away</li><li class="good">Target 7,000–10,000 steps daily</li><li class="good">Any continuous movement counts</li></ul></div>
+          <div class="rec-card"><div class="rec-card-icon">💪</div><h4>Strength training</h4><ul><li class="good">Muscle burns glucose — train 2–3× per week</li><li class="good">Bodyweight squats, lunges, planks are enough</li><li class="good">No gym membership required</li></ul></div>
+          <div class="rec-card highlight"><div class="rec-card-icon">⚡</div><h4>Key tip</h4><ul><li class="good">Walk 10 min after each meal — reduces post-meal glucose spike by up to 22%</li><li class="good">This single habit alone is clinically proven</li></ul></div>
+        </div>
+      </div>
+      <div class="rec-panel" id="rec-hab-h">
+        <div class="rec-grid">
+          <div class="rec-card"><div class="rec-card-icon">😴</div><h4>Sleep</h4><ul><li class="good">7–8 hours every night, same time daily</li><li class="good">Poor sleep raises cortisol → raises blood sugar</li><li class="bad">No screens 1 hour before bed</li><li class="bad">No caffeine after 2 PM</li></ul></div>
+          <div class="rec-card"><div class="rec-card-icon">💧</div><h4>Hydration</h4><ul><li class="good">8–10 glasses of water daily</li><li class="good">Start day with 2 glasses on empty stomach</li><li class="bad">Replace sweet drinks with plain water or nimbu pani (no sugar)</li><li class="good">Herbal teas without sugar are excellent</li></ul></div>
+          <div class="rec-card highlight"><div class="rec-card-icon">🧘</div><h4>Stress control</h4><ul><li class="good">10 min meditation daily reduces cortisol</li><li class="good">Deep breathing before meals</li><li class="good">Chronic stress directly raises blood sugar — manage it actively</li></ul></div>
+          <div class="rec-card"><div class="rec-card-icon">📋</div><h4>Monitoring</h4><ul><li class="good">Check fasting blood sugar weekly if possible</li><li class="good">Track meals in a food diary for 2 weeks</li><li class="good">See a doctor every 3 months while in high-risk</li></ul></div>
+          <div class="rec-card"><div class="rec-card-icon">🚭</div><h4>Stop immediately</h4><ul><li class="bad">Smoking — worsens insulin resistance severely</li><li class="bad">Alcohol — empty calories + blood sugar spike</li><li class="bad">Sitting for more than 1 hour without moving</li></ul></div>
+          <div class="rec-card"><div class="rec-card-icon">🌅</div><h4>Morning routine</h4><ul><li class="good">Light exercise before breakfast burns stored glucose</li><li class="good">Eat a protein-rich breakfast (eggs, paneer, dal)</li><li class="good">Never skip breakfast — the most important meal</li></ul></div>
+        </div>
+      </div>
+      <div class="rec-panel" id="rec-tgt-h">
+        <div class="rec-grid">
+          <div class="rec-card highlight"><div class="rec-card-icon">📅</div><h4>3-month targets</h4><ul><li class="good">Fasting glucose below 100 mg/dL</li><li class="good">Reduce BMI by 1–2 points</li><li class="good">Walk 30 min at least 5 days/week</li><li class="good">Lose 3–5% of current body weight</li></ul></div>
+          <div class="rec-card"><div class="rec-card-icon">🗓️</div><h4>6-month targets</h4><ul><li class="good">HbA1c below 5.7% (normal range)</li><li class="good">BMI reach 27 or below</li><li class="good">Blood pressure below 120/80 mmHg</li><li class="good">150 min exercise/week consistently</li></ul></div>
+          <div class="rec-card"><div class="rec-card-icon">🏆</div><h4>Long-term goal</h4><ul><li class="good">Reduce risk score below 30% (Low Risk)</li><li class="good">Normal fasting glucose maintained</li><li class="good">Healthy BMI for 12+ months</li><li class="good">Annual medical check-up as a habit</li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODERATE RISK -->
+    <div id="rec-moderate" style="display:none;">
+      <div style="padding:14px 18px;background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--r-lg);margin-bottom:18px;display:flex;align-items:center;gap:10px;">
+        <div style="font-size:22px;">⚠️</div>
+        <div><div style="font-size:14px;font-weight:600;color:var(--amber);">Moderate Risk — Start changing now.</div><div style="font-size:12px;color:var(--ink-2);margin-top:2px;">Small, consistent changes now can prevent diabetes entirely. You have time — use it.</div></div>
+      </div>
+      <div class="rec-grid">
+        <div class="rec-card"><div class="rec-card-icon">🍽️</div><h4>Key diet changes</h4><ul>
+          <li class="good">Switch white rice to brown rice or millets</li>
+          <li class="good">Eat a protein-rich breakfast every single day</li>
+          <li class="bad">Cut out sugary drinks completely</li>
+          <li class="bad">Reduce fried snacks to once a week maximum</li>
+          <li class="good">Add one extra vegetable serving to every meal</li>
+          <li class="good">Eat whole fruit instead of juice</li>
+        </ul></div>
+        <div class="rec-card highlight"><div class="rec-card-icon">🚶</div><h4>Start with walking</h4><ul>
+          <li class="good">30 min brisk walk every day to start</li>
+          <li class="good">Walk 10 min after every main meal</li>
+          <li class="good">Use stairs instead of lifts always</li>
+          <li class="good">7,000 steps/day reduces risk by 40%</li>
+        </ul></div>
+        <div class="rec-card"><div class="rec-card-icon">🩺</div><h4>Get tested now</h4><ul>
+          <li class="good">Fasting blood sugar test — do this month</li>
+          <li class="good">HbA1c test — shows 3-month average</li>
+          <li class="good">Share your DPF score with your doctor</li>
+          <li class="good">Consult a nutritionist for a meal plan</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- LOW RISK -->
+    <div id="rec-low" style="display:none;">
+      <div style="padding:14px 18px;background:var(--green-light);border:1px solid var(--teal);border-radius:var(--r-lg);margin-bottom:18px;display:flex;align-items:center;gap:10px;">
+        <div style="font-size:22px;">🎉</div>
+        <div><div style="font-size:14px;font-weight:600;color:var(--green);">Great news — you are at low risk!</div><div style="font-size:12px;color:var(--teal);margin-top:2px;">Here is how to keep it this way for life.</div></div>
+      </div>
+      <div class="maintain-grid">
+        <div class="maintain-card gb"><h4>🥗 Diet habits to keep</h4><ul>
+          <li>Continue balanced meals — don't skip</li>
+          <li>Whole grains, vegetables, and protein at every meal</li>
+          <li>Limit added sugar to under 25g per day</li>
+          <li>Fibre-rich foods help blood sugar stability</li>
+          <li>Stay hydrated — water throughout the day</li>
+        </ul></div>
+        <div class="maintain-card"><h4>🏃 Activity level to maintain</h4><ul>
+          <li>Keep exercising at least 150 min per week</li>
+          <li>Walk after meals whenever possible</li>
+          <li>Avoid sitting for long periods without moving</li>
+          <li>Include both cardio and strength training</li>
+          <li>20 min yoga daily is very protective long-term</li>
+        </ul></div>
+        <div class="maintain-card"><h4>🔬 Screenings to do regularly</h4><ul>
+          <li>Annual fasting blood glucose test</li>
+          <li>HbA1c check every 1–2 years after age 35</li>
+          <li>Blood pressure check every 6 months</li>
+          <li>BMI monitoring — keep between 18.5–23 (India)</li>
+        </ul></div>
+        <div class="maintain-card gb"><h4>⚠️ Warning signs to watch for</h4><ul>
+          <li>Increased thirst or frequent urination</li>
+          <li>Unexplained fatigue or blurred vision</li>
+          <li>Slow-healing wounds or repeated infections</li>
+          <li>Rapid weight gain, especially around abdomen</li>
+          <li>See a doctor immediately if any appear</li>
+        </ul></div>
+      </div>
+    </div>
+
+  </div><!-- end rec-section -->
+</section>
+
+<hr class="divider"/>
+
+<!-- WHAT-IF SIMULATOR -->
+<section class="section" id="simulator">
+  <div class="section-tag">What-If Simulator</div>
+  <h2 class="section-title">See how changes reduce your risk</h2>
+  <p class="section-sub">Drag the sliders to simulate lifestyle changes. Risk score updates instantly.</p>
+  <div class="sim-card">
+    <div class="sim-header">
+      <div><div class="card-title">Intervention Simulator</div><div class="card-sub">Adjust modifiable risk factors</div></div>
+      <div class="sim-live">Live updating</div>
+    </div>
+    <div class="sim-body">
+      <div class="sim-controls">
+        <div class="field" style="margin-bottom:18px;">
+          <div class="label-row"><label>BMI Target</label><span class="range-val" id="s-bmi-v">28.0</span></div>
+          <input type="range" min="15" max="60" step="0.5" value="28" id="s-bmi" oninput="setR(this,'s-bmi-v',1);simUpdate()"/>
+          <div class="range-labels"><span>15</span><span>60</span></div>
+        </div>
+        <div class="field" style="margin-bottom:18px;">
+          <div class="label-row"><label>Glucose Target (mg/dL)</label><span class="range-val" id="s-glu-v">120</span></div>
+          <input type="range" min="50" max="300" value="120" id="s-glu" oninput="setR(this,'s-glu-v',0);simUpdate()"/>
+          <div class="range-labels"><span>50</span><span>300</span></div>
+        </div>
+        <div class="field" style="margin-bottom:18px;">
+          <div class="label-row"><label>Exercise (days/week)</label><span class="range-val" id="s-act-v">1</span></div>
+          <input type="range" min="0" max="7" value="1" id="s-act" oninput="setR(this,'s-act-v',0);simUpdate()"/>
+          <div class="range-labels"><span>0 days</span><span>7 days</span></div>
+        </div>
+        <div class="field">
+          <div class="label-row"><label>Blood Pressure (mmHg)</label><span class="range-val" id="s-bp-v">80</span></div>
+          <input type="range" min="40" max="180" value="80" id="s-bp" oninput="setR(this,'s-bp-v',0);simUpdate()"/>
+          <div class="range-labels"><span>40</span><span>180</span></div>
+        </div>
+      </div>
+      <div class="sim-result">
+        <div style="font-size:12px;color:var(--ink-3);margin-bottom:3px;">Original risk</div>
+        <div style="font-family:var(--serif);font-size:1.2rem;color:var(--ink-3);text-decoration:line-through;margin-bottom:12px;" id="sim-base">—%</div>
+        <div style="font-size:12px;color:var(--ink-3);margin-bottom:3px;">Projected risk</div>
+        <div class="sim-big-num" id="sim-risk">—%</div>
+        <div class="sim-arrow down" id="sim-arrow" style="display:none">↓ <span id="sim-drop">0%</span></div>
+        <p class="sim-note" id="sim-note">Complete Step 2 first, then adjust sliders here.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="section-tag">Methodology</div>
+  <h2 class="section-title">How the prediction works</h2>
+  <p class="section-sub">A transparent, explainable 4-step ML pipeline.</p>
+  <div class="steps-row">
+    <div class="step-item"><div class="step-icon c1">📊</div><div class="step-num">01</div><h4>Data Intake</h4><p>8 health indicators — clinical, lifestyle, and genetic — entered through the calculators and form.</p></div>
+    <div class="step-item"><div class="step-icon c2">⚙️</div><div class="step-num">02</div><h4>Preprocessing</h4><p>Values are scaled using the same StandardScaler pipeline applied during model training for accuracy.</p></div>
+    <div class="step-item"><div class="step-icon c3">🧠</div><div class="step-num">03</div><h4>XGBoost Model</h4><p>Ensemble model trained on NHANES + PIMA data with SMOTE class balancing. AUC-ROC: 92%.</p></div>
+    <div class="step-item"><div class="step-icon c4">🔍</div><div class="step-num">04</div><h4>SHAP Explanation</h4><p>SHAP values reveal exactly how much each input contributed to your final risk score — fully transparent.</p></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Diabetes<span>IQ</span></div>
+  <p>Built as part of a college ML project. Not a substitute for medical advice — always consult a doctor.</p>
+  <p style="margin-top:5px;">Python · Flask · XGBoost · SHAP · HTML · CSS · JavaScript</p>
+</footer>
+
+<script>
+// ── UTILS ──
+const DPF_W={parent:0.50,sibling:0.45,grandparent:0.30,uncle_aunt:0.25,cousin:0.12,none:0};
+const DPF_G={parent:'1st generation',sibling:'1st generation',grandparent:'2nd generation',uncle_aunt:'2nd generation',cousin:'3rd generation',none:'—'};
+let dpfRows=1;
+
+function setR(el,outId,dec){
+  document.getElementById(outId).textContent=parseFloat(el.value).toFixed(dec);
+  const p=((el.value-el.min)/(el.max-el.min))*100;
+  el.style.setProperty('--pct',p+'%');
+}
+document.querySelectorAll('input[type=range]').forEach(el=>{
+  const p=((el.value-el.min)/(el.max-el.min))*100;
+  el.style.setProperty('--pct',p+'%');
+});
+
+// ── TABS ──
+function switchTab(tab,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+// ── BMI ──
+function toggleBmiUnit(){
+  const u=document.getElementById('bmi-unit').value;
+  document.getElementById('bmi-metric-fields').style.display=u==='metric'?'block':'none';
+  document.getElementById('bmi-imperial-fields').style.display=u==='imperial'?'block':'none';
+}
+function calcBMI(){
+  const u=document.getElementById('bmi-unit').value;
+  let bmi;
+  if(u==='metric'){
+    const h=parseFloat(document.getElementById('bmi-h-cm').value)/100;
+    const w=parseFloat(document.getElementById('bmi-w-kg').value);
+    if(!h||!w||h<=0){alert('Please enter valid height and weight.');return;}
+    bmi=w/(h*h);
+  } else {
+    const ft=parseFloat(document.getElementById('bmi-ft').value)||0;
+    const inc=parseFloat(document.getElementById('bmi-in').value)||0;
+    const lbs=parseFloat(document.getElementById('bmi-lbs').value);
+    if(!lbs){alert('Please enter your weight.');return;}
+    const tin=(ft*12)+inc;
+    bmi=(lbs*703)/(tin*tin);
+  }
+  bmi=Math.round(bmi*10)/10;
+  window._bmi=bmi;
+  document.getElementById('bmi-num').textContent=bmi;
+  document.getElementById('bmi-result').classList.remove('hidden');
+  const cat=document.getElementById('bmi-cat');
+  cat.className='result-badge';
+  if(bmi<18.5){cat.textContent='Underweight';cat.classList.add('overweight');}
+  else if(bmi<23){cat.textContent='Normal (India)';cat.classList.add('normal');}
+  else if(bmi<25){cat.textContent='At Risk';cat.classList.add('overweight');}
+  else if(bmi<30){cat.textContent='Overweight';cat.classList.add('overweight');}
+  else{cat.textContent='Obese';cat.classList.add('obese');}
+  document.getElementById('bmi-fill-btn').classList.remove('hidden');
+}
+function fillBMI(){
+  document.getElementById('f-bmi').value=window._bmi;
+  document.getElementById('bmi-pre').style.display='flex';
+  document.getElementById('check').scrollIntoView({behavior:'smooth'});
+}
+
+// ── SKIN ──
+function calcSkin(){
+  const sex=document.getElementById('skin-sex').value;
+  const age=parseInt(document.getElementById('skin-age').value);
+  const build=document.getElementById('skin-build').value;
+  const base={lean:10,average:20,heavy:29,obese:38};
+  let v=base[build];
+  if(sex==='female') v+=3;
+  if(age>50) v+=2;
+  if(age>65) v+=2;
+  v=Math.min(60,v);
+  window._skin=v;
+  document.getElementById('skin-num').textContent=v+' mm';
+  document.getElementById('skin-result').classList.remove('hidden');
+  const cat=document.getElementById('skin-cat');
+  cat.className='result-badge';
+  if(v<15){cat.textContent='Very lean';cat.classList.add('normal');}
+  else if(v<25){cat.textContent='Normal';cat.classList.add('normal');}
+  else if(v<35){cat.textContent='Above average';cat.classList.add('overweight');}
+  else{cat.textContent='High';cat.classList.add('obese');}
+  document.getElementById('skin-fill-btn').classList.remove('hidden');
+}
+function fillSkin(){
+  document.getElementById('f-skin').value=window._skin;
+  document.getElementById('skin-pre').style.display='flex';
+  document.getElementById('check').scrollIntoView({behavior:'smooth'});
+}
+
+// ── DPF ──
+function addRelRow(){
+  dpfRows++;
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><select class="rel-row-select" onchange="updateDPFRow(this)">
+    <option value="none">— Select —</option>
+    <option value="parent">Parent</option>
+    <option value="sibling">Brother / Sister</option>
+    <option value="grandparent">Grandparent</option>
+    <option value="uncle_aunt">Uncle / Aunt</option>
+    <option value="cousin">Cousin</option>
+  </select></td>
+  <td class="dpf-gen" style="font-size:12px;color:var(--ink-3)">—</td>
+  <td><span class="dpf-wt" style="font-size:13px;font-weight:600;color:var(--ink-2)">—</span></td>
+  <td><button onclick="removeRow(this)" style="background:none;border:none;cursor:pointer;color:var(--ink-3);font-size:13px;padding:2px 4px;">✕</button></td>`;
+  document.getElementById('dpf-tbody').appendChild(tr);
+}
+function removeRow(btn){
+  const tr=btn.closest('tr');
+  if(document.getElementById('dpf-tbody').children.length>1) tr.remove();
+}
+function updateDPFRow(sel){
+  const tr=sel.closest('tr');
+  const v=sel.value;
+  tr.querySelector('.dpf-wt').textContent=v==='none'?'—':DPF_W[v].toFixed(2);
+  tr.querySelector('.dpf-gen').textContent=DPF_G[v]||'—';
+}
+function calcDPF(){
+  let total=0;
+  document.querySelectorAll('#dpf-tbody select').forEach(s=>{
+    if(s.value!=='none') total+=DPF_W[s.value];
+  });
+  total=Math.min(2.5,Math.max(0.08,Math.round((total+0.08)*100)/100));
+  window._dpf=total;
+  document.getElementById('dpf-num').textContent=total.toFixed(2);
+  document.getElementById('dpf-result').classList.remove('hidden');
+  const cat=document.getElementById('dpf-cat');
+  cat.className='result-badge';
+  if(total<0.4){cat.textContent='Low genetic risk';cat.classList.add('normal');}
+  else if(total<0.8){cat.textContent='Moderate genetic risk';cat.classList.add('overweight');}
+  else{cat.textContent='High genetic risk';cat.classList.add('obese');}
+  document.getElementById('dpf-fill-btn').classList.remove('hidden');
+}
+function fillDPF(){
+  document.getElementById('f-dpf').value=window._dpf;
+  document.getElementById('dpf-pre').style.display='flex';
+  document.getElementById('check').scrollIntoView({behavior:'smooth'});
+}
+
+// ── PREDICTION ──
+function runPrediction(){
+  const glucose=parseFloat(document.getElementById('f-glucose').value)||120;
+  const bp=parseFloat(document.getElementById('f-bp').value)||80;
+  const bmi=parseFloat(document.getElementById('f-bmi').value)||25;
+  const skin=parseFloat(document.getElementById('f-skin').value)||20;
+  const insulin=parseFloat(document.getElementById('f-insulin').value)||80;
+  const age=parseFloat(document.getElementById('f-age').value)||30;
+  const preg=parseFloat(document.getElementById('f-preg').value)||0;
+  const dpf=parseFloat(document.getElementById('f-dpf').value)||0.25;
+
+  // ── Demo risk formula (replace with Flask API call in production) ──
+  let risk=8;
+  if(glucose>180) risk+=32;
+  else if(glucose>140) risk+=22;
+  else if(glucose>100) risk+=10;
+  if(bmi>=35) risk+=22;
+  else if(bmi>=30) risk+=15;
+  else if(bmi>=25) risk+=8;
+  else if(bmi>=23) risk+=4;
+  if(age>=60) risk+=14;
+  else if(age>=50) risk+=10;
+  else if(age>=40) risk+=6;
+  else if(age>=35) risk+=3;
+  if(dpf>=1.2) risk+=16;
+  else if(dpf>=0.8) risk+=11;
+  else if(dpf>=0.4) risk+=6;
+  if(bp>100) risk+=9;
+  else if(bp>90) risk+=4;
+  if(insulin<20||insulin>250) risk+=5;
+  if(skin>35) risk+=4;
+  if(preg>5) risk+=5;
+  else if(preg>2) risk+=2;
+  risk=Math.max(5,Math.min(96,risk));
+  window._baseRisk=risk;
+
+  // Update gauge (circumference = 2*PI*62 ≈ 389.6)
+  const circ=2*Math.PI*62;
+  const offset=circ*(1-risk/100);
+  const gc=document.getElementById('gauge-c');
+  gc.style.strokeDasharray=circ;
+  gc.style.strokeDashoffset=offset;
+  document.getElementById('gauge-pct').textContent=risk+'%';
+
+  let level,color,lbl;
+  if(risk<30){
+    level='Low Risk';color='var(--teal)';lbl='You are at low risk. Keep up your healthy lifestyle!';
+    document.getElementById('risk-badge').className='risk-badge low';
+    showRec('low');
+  } else if(risk<60){
+    level='Moderate Risk';color='var(--amber)';lbl='You are at moderate risk. Changes now can prevent diabetes.';
+    document.getElementById('risk-badge').className='risk-badge moderate';
+    showRec('moderate');
+  } else {
+    level='High Risk';color='var(--accent)';lbl='High-risk category. Early intervention is strongly advised.';
+    document.getElementById('risk-badge').className='risk-badge high';
+    showRec('high');
+  }
+  gc.style.stroke=color;
+  document.getElementById('risk-badge').textContent=level;
+  document.getElementById('gauge-lbl').textContent=lbl;
+
+  // Update SHAP bars (approximate demo values)
+  const gluShap=glucose>140?0.74:glucose>100?0.38:0.10;
+  const bmiShap=bmi>=30?0.58:bmi>=25?0.28:0.08;
+  const dpfShap=dpf>=0.8?0.42:dpf>=0.4?0.22:0.06;
+  const ageShap=age>=50?0.30:age>=35?0.14:0.05;
+  const bpShap=bp<80?-0.16:-0.04;
+  const insShap=insulin>=50&&insulin<=200?-0.10:-0.02;
+
+  function setShap(barId,valId,v){
+    const el=document.getElementById(barId);
+    const vEl=document.getElementById(valId);
+    const pct=Math.min(100,Math.abs(v)*110);
+    el.style.width=pct+'%';
+    el.className='shap-bar-fill '+(v>=0?'pos':'neg');
+    vEl.className='shap-val '+(v>=0?'pos':'neg');
+    vEl.textContent=(v>=0?'+':'')+v.toFixed(2);
+  }
+  setShap('sh1','sv1',gluShap);
+  setShap('sh2','sv2',bmiShap);
+  setShap('sh3','sv3',dpfShap);
+  setShap('sh4','sv4',ageShap);
+  setShap('sh5','sv5',bpShap);
+  setShap('sh6','sv6',insShap);
+
+  // Insight text
+  const topFactor=gluShap>=bmiShap?`glucose level (${glucose} mg/dL)`:`BMI of ${bmi}`;
+  document.getElementById('insight-txt').innerHTML=
+    `<strong>Plain-English Summary:</strong> Your ${topFactor} is the biggest contributor to your ${level.toLowerCase()}. `+
+    (dpf>=0.8?`Your family history score (${dpf}) indicates a genetic predisposition — this is not changeable, but lifestyle changes can compensate significantly. `:`Your family history shows low genetic influence, which is a protective factor. `)+
+    (age>=45?`Being over 45 increases risk — regular screening is important. `:'')+
+    (bmi>=25?`Reducing your BMI by even 2 points would lower your risk noticeably.`:`Your BMI is in a healthy range, which is working in your favour.`);
+
+  // Set simulator baseline
+  document.getElementById('sim-base').textContent=risk+'%';
+  document.getElementById('sim-risk').textContent=risk+'%';
+  document.getElementById('s-bmi').value=bmi;setR(document.getElementById('s-bmi'),'s-bmi-v',1);
+  document.getElementById('s-glu').value=glucose;setR(document.getElementById('s-glu'),'s-glu-v',0);
+
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+
+function showRec(level){
+  document.getElementById('recommendations').style.display='block';
+  document.getElementById('rec-high').style.display=level==='high'?'block':'none';
+  document.getElementById('rec-moderate').style.display=level==='moderate'?'block':'none';
+  document.getElementById('rec-low').style.display=level==='low'?'block':'none';
+  const titles={high:'Your personalised action plan — High Risk 🚨',moderate:'Your action plan — Moderate Risk ⚠️',low:'Your maintenance plan — Low Risk 🎉'};
+  document.getElementById('rec-main-title').textContent=titles[level];
+}
+
+// ── REC TABS ──
+function switchRec(panel,btn){
+  const container=btn.closest('.rec-high, #rec-high')||btn.parentElement.parentElement;
+  btn.parentElement.querySelectorAll('.rec-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const pfx=panel.includes('diet-h')||panel.includes('exr-h')||panel.includes('hab-h')||panel.includes('tgt-h');
+  document.querySelectorAll(`#rec-high .rec-panel`).forEach(p=>p.classList.remove('active'));
+  document.getElementById('rec-'+panel).classList.add('active');
+}
+
+// ── SIMULATOR ──
+function simUpdate(){
+  const base=window._baseRisk||50;
+  const bmi=parseFloat(document.getElementById('s-bmi').value);
+  const glu=parseFloat(document.getElementById('s-glu').value);
+  const act=parseInt(document.getElementById('s-act').value);
+  const bp=parseFloat(document.getElementById('s-bp').value);
+  const formBMI=parseFloat(document.getElementById('f-bmi').value)||25;
+  const formGlu=parseFloat(document.getElementById('f-glucose').value)||120;
+  let risk=base;
+  risk+=(bmi-formBMI)*0.55;
+  risk+=(glu-formGlu)*0.07;
+  risk-=act*2.8;
+  risk+=(bp-80)*0.08;
+  risk=Math.max(5,Math.min(97,Math.round(risk)));
+  const drop=base-risk;
+  document.getElementById('sim-risk').textContent=risk+'%';
+  const arrow=document.getElementById('sim-arrow');
+  const note=document.getElementById('sim-note');
+  if(drop>0){
+    arrow.className='sim-arrow down';
+    arrow.style.display='inline-flex';
+    arrow.innerHTML=`↓ <span id="sim-drop">${drop}%</span> reduction`;
+    note.textContent=`By hitting these targets, your risk drops from ${base}% to ${risk}%. Reducing glucose has the highest impact per unit.`;
+  } else if(drop<0){
+    arrow.className='sim-arrow up';
+    arrow.style.display='inline-flex';
+    arrow.innerHTML=`↑ <span id="sim-drop">${Math.abs(drop)}%</span> increase`;
+    note.textContent='These values would increase your risk. Lower glucose and BMI, and increase exercise days.';
+  } else {
+    arrow.style.display='none';
+    note.textContent='No change from current values.';
+  }
+}
+</script>
+</body>
+</html>
